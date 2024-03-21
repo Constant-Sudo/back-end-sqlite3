@@ -40,6 +40,40 @@ class TeacherStudent(BaseModel):
     class_str: str
 
 
+def get_all_graded_exams() -> list:
+    with sqlite3.connect('database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM exam_graded')
+        results = cursor.fetchall()
+        graded_exams = []
+        for result in results:
+            graded_exams.append(result)
+        return graded_exams
+
+
+def get_all_exams() -> list:
+    with sqlite3.connect('database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM exam')
+        results = cursor.fetchall()
+        exams = []
+        for result in results:
+            exam = Exam(e_id=result[0], t_id=result[1], date=result[2], subject=result[3])
+            exams.append(exam)
+        return exams
+
+def get_exam_graded_by_student_id(student_id: int) -> list:
+    with sqlite3.connect('database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM exam_graded WHERE s_id = ?', (student_id,))
+        results = cursor.fetchall()
+        exam_graded_list = []
+        for result in results:
+            exam_graded = ExamGraded(e_id=result[0], s_id=result[1], criteria=result[2], score=result[3])
+            exam_graded_list.append(exam_graded)
+        return exam_graded_list
+
+
 def get_graded_exams_by_subject(student_id: int, subject: str) -> list:
     with sqlite3.connect('database.db') as conn:
         cursor = conn.cursor()
